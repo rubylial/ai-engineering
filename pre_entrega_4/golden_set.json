@@ -1,0 +1,22 @@
+[
+  {
+    "pregunta": "¿Qué es asyncio.Semaphore y cuándo lo usarías?",
+    "documento_id_esperado": "01_asyncio_python.md"
+  },
+  {
+    "pregunta": "¿Por qué la similitud coseno es la métrica estándar en RAG?",
+    "documento_id_esperado": "02_embeddings_similitud.md"
+  },
+  {
+    "pregunta": "¿Cómo se compone una cadena LCEL con el operador pipe?",
+    "documento_id_esperado": "03_langchain_lcel.md"
+  },
+  {
+    "pregunta": "¿Para qué sirven los namespaces en Pinecone?",
+    "documento_id_esperado": "05_pinecone_serverless.md"
+  },
+  {
+    "pregunta": "¿Qué ventaja tiene BM25 sobre la búsqueda puramente semántica?",
+    "documento_id_esperado": "06_hybrid_retrieval.md"
+  }
+]
