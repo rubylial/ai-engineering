@@ -1,0 +1,85 @@
+{
+  "generated_at": "2026-11-05T01:58:00Z",
+  "n_messages": 9,
+  "metadata": {
+    "thread_id": "cliente-juan-perez-001",
+    "model": "claude-haiku-4-5",
+    "recursion_limit": 15,
+    "queries": [
+      "¿Cuántos pedidos tuvo Juan Pérez y cuál fue el total?",
+      "¿Y cuál fue el último pedido? Dame el detalle completo."
+    ],
+    "note": "Traza de ejemplo. La real se regenera corriendo `python main.py`."
+  },
+  "messages": [
+    {
+      "type": "HumanMessage",
+      "content": "¿Cuántos pedidos tuvo Juan Pérez y cuál fue el total?",
+      "source": "user"
+    },
+    {
+      "type": "AIMessage",
+      "content": "",
+      "tool_calls": [
+        {
+          "name": "buscar_cliente",
+          "args": {"nombre": "Juan Pérez"},
+          "id": "toolu_01abc"
+        }
+      ]
+    },
+    {
+      "type": "ToolMessage",
+      "content": "{\"cliente_id\": 102, \"nombre\": \"Juan Pérez\", \"email\": \"juan@acme.com\"}",
+      "tool_name": "buscar_cliente",
+      "tool_call_id": "toolu_01abc"
+    },
+    {
+      "type": "AIMessage",
+      "content": "",
+      "tool_calls": [
+        {
+          "name": "buscar_pedidos",
+          "args": {"cliente_id": 102},
+          "id": "toolu_02def"
+        }
+      ]
+    },
+    {
+      "type": "ToolMessage",
+      "content": "{\"pedidos\": 3, \"total\": 14500, \"ultimo_pedido_id\": 1020}",
+      "tool_name": "buscar_pedidos",
+      "tool_call_id": "toolu_02def"
+    },
+    {
+      "type": "AIMessage",
+      "content": "Juan Pérez (cliente 102) tuvo 3 pedidos por un total de $14.500."
+    },
+    {
+      "type": "HumanMessage",
+      "content": "¿Y cuál fue el último pedido? Dame el detalle completo.",
+      "source": "user"
+    },
+    {
+      "type": "AIMessage",
+      "content": "",
+      "tool_calls": [
+        {
+          "name": "obtener_detalle_pedido",
+          "args": {"pedido_id": 1020},
+          "id": "toolu_03ghi"
+        }
+      ]
+    },
+    {
+      "type": "ToolMessage",
+      "content": "{\"id\": 1020, \"fecha\": \"2026-11-02\", \"monto\": 3500}",
+      "tool_name": "obtener_detalle_pedido",
+      "tool_call_id": "toolu_03ghi"
+    },
+    {
+      "type": "AIMessage",
+      "content": "El último pedido de Juan Pérez fue el #1020, con fecha 2026-11-02 por un monto de $3.500."
+    }
+  ]
+}
