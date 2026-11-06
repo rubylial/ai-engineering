@@ -1,0 +1,46 @@
+name: api-agente
+
+services:
+  redis:
+    image: redis:8.10.3  # incluye RedisJSON y RediSearch, que AsyncRedisSaver necesita
+    command: ["redis-server", "--appendonly", "yes"]  # AOF: los checkpoints sobreviven reinicios
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  phoenix:
+    image: arizephoenix/phoenix:version-21.0.0
+    ports:
+      - "6006:6006"  # UI + colector OTLP/HTTP
+    volumes:
+      - phoenix-data:/mnt/data
+    healthcheck:
+      test: ["CMD", "/usr/bin/python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:6006/healthz')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      # Overrides para hablar con los otros contenedores por nombre de servicio.
+      REDIS_URL: redis://redis:6379/0
+      PHOENIX_ENDPOINT: http://phoenix:6006
+    depends_on:
+      redis:
+        condition: service_healthy
+      phoenix:
+        condition: service_healthy
+
+volumes:
+  redis-data:
+  phoenix-data:

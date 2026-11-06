@@ -1,0 +1,9 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+dist/
+*.egg-info/
+# screenshots/ se versiona: es la evidencia de la entrega (menos este placeholder queda)
