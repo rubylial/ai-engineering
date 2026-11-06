@@ -1,0 +1,23 @@
+# Secretos
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python / uv
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+dist/
+build/
+*.egg-info/
+
+# Editores / SO
+.vscode/
+.idea/
+*.swp
+.DS_Store

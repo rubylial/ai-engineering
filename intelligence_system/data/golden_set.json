@@ -1,0 +1,82 @@
+[
+  {
+    "pregunta": "¿Qué es asyncio.Semaphore y cuándo lo usarías?",
+    "documento_id_esperado": "01_asyncio_python.md",
+    "tipo": "termino_exacto"
+  },
+  {
+    "pregunta": "¿Por qué la similitud coseno es la métrica estándar en RAG?",
+    "documento_id_esperado": "02_embeddings_similitud.md",
+    "tipo": "concepto"
+  },
+  {
+    "pregunta": "¿Cómo se compone una cadena LCEL con el operador pipe?",
+    "documento_id_esperado": "03_langchain_lcel.md",
+    "tipo": "concepto"
+  },
+  {
+    "pregunta": "¿Para qué sirven los namespaces en Pinecone?",
+    "documento_id_esperado": "05_pinecone_serverless.md",
+    "tipo": "termino_exacto"
+  },
+  {
+    "pregunta": "¿Qué ventaja tiene BM25 sobre la búsqueda puramente semántica?",
+    "documento_id_esperado": "06_hybrid_retrieval.md",
+    "tipo": "concepto"
+  },
+  {
+    "pregunta": "¿Qué diferencia hay entre get y query en una vector database?",
+    "documento_id_esperado": "04_chromadb_rag.md",
+    "tipo": "concepto"
+  },
+  {
+    "pregunta": "¿Cuál es el tradeoff entre precision y recall al elegir k?",
+    "documento_id_esperado": "07_rag_metricas.md",
+    "tipo": "concepto"
+  },
+  {
+    "pregunta": "¿Por qué 'hay stock' y 'no hay stock' quedan cerca en el espacio de embeddings?",
+    "documento_id_esperado": "02_embeddings_similitud.md",
+    "tipo": "concepto"
+  },
+  {
+    "pregunta": "¿Para qué se usa RunnableParallel?",
+    "documento_id_esperado": "03_langchain_lcel.md",
+    "tipo": "termino_exacto"
+  },
+  {
+    "pregunta": "¿Cómo calcula el score Reciprocal Rank Fusion?",
+    "documento_id_esperado": "06_hybrid_retrieval.md",
+    "tipo": "termino_exacto"
+  },
+  {
+    "pregunta": "¿Cómo se usa asyncio.timeout para limitar una llamada a un LLM?",
+    "documento_id_esperado": "01_asyncio_python.md",
+    "tipo": "termino_exacto"
+  },
+  {
+    "pregunta": "¿Qué es un golden set y cómo se construye?",
+    "documento_id_esperado": "07_rag_metricas.md",
+    "tipo": "termino_exacto"
+  },
+  {
+    "pregunta": "¿Cómo aíslo los datos de distintos clientes dentro de un mismo índice en la nube sin pagar por varios índices?",
+    "documento_id_esperado": "05_pinecone_serverless.md",
+    "tipo": "parafrasis"
+  },
+  {
+    "pregunta": "¿Por qué se me pierden todos los documentos de la base vectorial local al cerrar el script?",
+    "documento_id_esperado": "04_chromadb_rag.md",
+    "tipo": "parafrasis"
+  },
+  {
+    "pregunta": "¿Conviene lanzar diez mil llamadas al modelo de embeddings al mismo tiempo?",
+    "documento_id_esperado": "01_asyncio_python.md",
+    "tipo": "parafrasis"
+  },
+  {
+    "pregunta": "¿Por qué una búsqueda por significado no encuentra el identificador exacto de un modelo?",
+    "documento_id_esperado": "06_hybrid_retrieval.md",
+    "tipo": "parafrasis"
+  }
+]

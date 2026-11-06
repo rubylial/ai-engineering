@@ -1,0 +1,69 @@
+# The Intelligence System — despliegue local completo.
+#   ./run.sh            (recomendado: valida .env, levanta, espera salud e ingesta)
+#   docker compose up -d --build --wait
+# Los puertos del host se configuran en .env (API_PORT, PHOENIX_PORT, REDIS_PORT).
+name: intelligence-system
+
+services:
+  redis:
+    # Redis 8 trae RedisJSON y RediSearch, que exige langgraph-checkpoint-redis.
+    image: redis:8.10.3
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+    volumes:
+      - redis-data:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  phoenix:
+    # Tag sin sufijo = variante root (distroless python3-debian13, amd64/arm64): puede escribir en
+    # el volumen nombrado. La variante -nonroot necesitaría ajustar permisos de /mnt/data.
+    image: arizephoenix/phoenix:version-21.0.0
+    environment:
+      PHOENIX_WORKING_DIR: /mnt/data
+    volumes:
+      - phoenix-data:/mnt/data
+    ports:
+      - "${PHOENIX_PORT:-6006}:6006"
+    healthcheck:
+      # Imagen distroless: sin shell ni curl, pero con /usr/bin/python3.
+      test: ["CMD", "/usr/bin/python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:6006/healthz', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    restart: unless-stopped
+
+  api:
+    build: .
+    image: intelligence-system-api:1.0.0
+    env_file: .env
+    environment:
+      # Direcciones internas de la red de compose (pisan las de .env).
+      REDIS_URL: redis://redis:6379/0
+      PHOENIX_COLLECTOR_ENDPOINT: http://phoenix:6006
+      API_HOST: 0.0.0.0
+      API_PORT: "8000"
+    ports:
+      - "${API_PORT:-8000}:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+      phoenix:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=4)"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+  phoenix-data:

@@ -1,0 +1,9 @@
+# Finales de línea LF para lo que se ejecuta dentro de Linux/Docker,
+# aunque se haga checkout en Windows con core.autocrlf=true.
+*.sh               text eol=lf
+Makefile           text eol=lf
+Dockerfile         text eol=lf
+docker-compose.yml text eol=lf
+.env.example       text eol=lf
+*.py               text eol=lf
+uv.lock            text eol=lf

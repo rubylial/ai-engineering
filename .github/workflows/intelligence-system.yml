@@ -1,0 +1,40 @@
+# CI de The Intelligence System (carpeta intelligence_system/ del monorepo del curso).
+# Corre solo cuando cambia esa carpeta: lint (ruff) + tests unitarios (sin red, sin claves).
+# Los tests de integración quedan fuera (necesitan Redis 8 y Pinecone): se corren localmente
+# con `make test-integration`.
+name: intelligence-system
+
+on:
+  push:
+    paths:
+      - "intelligence_system/**"
+      - ".github/workflows/intelligence-system.yml"
+  pull_request:
+    paths:
+      - "intelligence_system/**"
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: intelligence_system
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"   # misma versión que la imagen Docker
+
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Instalar dependencias (lockfile congelado)
+        run: uv sync --frozen
+
+      - name: Lint y formato
+        run: |
+          uv run ruff check src tests scripts
+          uv run ruff format --check src tests scripts
+
+      - name: Tests unitarios
+        run: uv run pytest -q

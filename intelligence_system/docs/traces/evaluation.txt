@@ -1,0 +1,6 @@
+uv run --env-file .env python scripts/evaluate_retrieval.py --k 5
+warning: `VIRTUAL_ENV=/home/leonardo/.pyenv/versions/ruby` does not match the project environment path `.venv` and will be ignored; use `--active` to target the active environment instead
+variante                        P@k    R@k    MRR
+híbrido (alpha=0.7)           0.680  1.000  1.000
+solo denso (alpha=1.0)        0.640  1.000  1.000
+solo BM25 (alpha=0.0)         0.680  1.000  1.000

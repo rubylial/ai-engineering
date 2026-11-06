@@ -1,0 +1,128 @@
+[
+  {
+    "id": "1",
+    "name": "Pregunta RAG simple",
+    "input": "¿Para qué sirve asyncio.Semaphore cuando llamo a un LLM?",
+    "expected": "grounded=true, ≥1 cita de documento, pasa por researcher",
+    "obtained": "grounded=True, citas=2, pasos=supervisor→researcher→supervisor→writer",
+    "passed": true,
+    "status_code": 200,
+    "trace_id": "df0b74ae59c07c6040cb1fb979127ae1",
+    "trace_url": "http://localhost:6006/redirects/traces/df0b74ae59c07c6040cb1fb979127ae1",
+    "request_id": "req_c73c7a4bacb849fba758d360384acdbb",
+    "thread_id": "esc1-530ee0",
+    "latency_ms": 7759.7,
+    "details": {
+      "answer": "`asyncio.Semaphore` limita cuántas corrutinas pueden ejecutarse al mismo tiempo. Es indispensable cuando trabajás con APIs que tienen rate limits [1].\n\nPor ejemplo, para embeddear 10.000 textos no conviene usar `asyncio.gather` sobre las 10.000 llamadas. Todas se encolan, pero el semáforo restringe la ejecución a 5-10 llamadas en paralelo, lo que evita el error 429 (Too Many Requests) [1].\n\nEsto aplica a llamadas a LLMs porque son operaciones I/O-bound: el programa espera la respuesta del servidor, y asyncio permite gestionar otras tareas mientras tanto [2].",
+      "citations": [
+        "01_asyncio_python#d59f2fa4d72d6fea",
+        "01_asyncio_python#02762e27e02cbb73"
+      ]
+    }
+  },
+  {
+    "id": "2",
+    "name": "Tarea multi-paso (≥2 workers)",
+    "input": "Según la documentación, ¿con qué tamaño de chunk y overlap conviene empezar? Calculá cuántos chunks salen de un documento de 12000 tokens con esa configuración.",
+    "expected": "researcher + analyst, citas de documento y de cálculo",
+    "obtained": "pasos=supervisor→researcher→supervisor→analyst→supervisor→writer, tipos de cita=['document', 'tool']",
+    "passed": true,
+    "status_code": 200,
+    "trace_id": "4ee3c12a8d9966daf9fab0429755271e",
+    "trace_url": "http://localhost:6006/redirects/traces/4ee3c12a8d9966daf9fab0429755271e",
+    "request_id": "req_b189d36ea419420385b9e241c1967075",
+    "thread_id": "esc2-530ee0",
+    "latency_ms": 13615.1,
+    "details": {
+      "answer": "Según la documentación, un buen punto de partida es de **500 tokens por chunk con 50 de overlap**[1]. La documentación también indica que menos de 200 tokens pierde contexto y más de 1000 diluye el significado en el vector promedio[1].\n\nCon esa configuración, un documento de 12000 tokens genera **27 chunks**[2]. El paso efectivo es de 450 tokens, y la fórmula usada es 1 + ceil(max(0, 12000 − 500) / (500 − 50)) = 27[2]."
+    }
+  },
+  {
+    "id": "3",
+    "name": "Pregunta sin evidencia",
+    "input": "¿Cuál es la capital de Australia?",
+    "expected": "grounded=false, 0 citas, responde que no sabe",
+    "obtained": "grounded=False, citas=0",
+    "passed": true,
+    "status_code": 200,
+    "trace_id": "2eff937629e5635900d91ebb2f5be62a",
+    "trace_url": "http://localhost:6006/redirects/traces/2eff937629e5635900d91ebb2f5be62a",
+    "request_id": "req_c989dddde63a4ce3af4597fdb75ded54",
+    "thread_id": "esc3-530ee0",
+    "latency_ms": 1416.4,
+    "details": {
+      "answer": "No encontré evidencia suficiente en la base de conocimiento para responder esa pregunta, así que prefiero no inventar una respuesta. Puedo ayudarte con temas de AI Engineering cubiertos por la documentación: asyncio, embeddings, LCEL, bases vectoriales (ChromaDB, Pinecone), retrieval híbrido y métricas de RAG."
+    }
+  },
+  {
+    "id": "4",
+    "name": "Continuación por thread_id",
+    "input": "¿Qué es BM25? → ¿Y qué limitación tiene frente a la búsqueda semántica?",
+    "expected": "2º turno resuelto con el contexto; 4 mensajes",
+    "obtained": "mensajes en el thread=4, grounded 2º turno=True",
+    "passed": true,
+    "status_code": 200,
+    "trace_id": "f7fae6e6f115f049646441e4190fbb71",
+    "trace_url": "http://localhost:6006/redirects/traces/f7fae6e6f115f049646441e4190fbb71",
+    "request_id": "req_73da479888534b5fb7b03a8664b837d1",
+    "thread_id": "esc4-530ee0",
+    "latency_ms": 10426.1,
+    "details": {
+      "answer": "La principal limitación de BM25 frente a la búsqueda semántica es que no entiende sinónimos ni paráfrasis: si el usuario busca \"velocidad\" y el documento dice \"rapidez\", BM25 no encuentra nada [4]. La búsqueda densa, en cambio, captura sinónimos, paráfrasis y significado [1].\n\nAdemás, la implementación `BM25Retriever` de LangChain mantiene el índice en RAM. Funciona bien con corpus pequeños (miles de documentos), pero para millones de documentos hay que pasar a OpenSearch o Elasticsearch, o usar índices sparse nativos en Pinecone [2]. Esta es una limitación de escala del enfoque in-memory, no una diferencia entre BM25 y la búsqueda semántica.",
+      "supervisor_task": "→ researcher (llm): La pregunta pide limitaciones de BM25 frente a la búsqueda semántica, lo que requiere evidencia de la documentación de retrieval híbrido y embeddings. No hay cálculo involucrado."
+    }
+  },
+  {
+    "id": "5",
+    "name": "Error controlado / timeout",
+    "input": "Explicá RRF (deadline_s=0.001) + mensaje vacío",
+    "expected": "504 problem+json con request_id y trace_id; 422 para el mensaje vacío",
+    "obtained": "504 /errors/graph-timeout; mensaje vacío → 422",
+    "passed": true,
+    "status_code": 504,
+    "trace_id": "39e7fad29cbc1f50438e779b29893c1b",
+    "trace_url": "http://localhost:6006/redirects/traces/39e7fad29cbc1f50438e779b29893c1b",
+    "request_id": "req_1a9ae7163aeb47129de87528a3a84684",
+    "thread_id": "esc5-530ee0",
+    "latency_ms": 38.8,
+    "details": {
+      "timeout_body": {
+        "type": "/errors/graph-timeout",
+        "title": "Se excedió el tiempo de procesamiento",
+        "status": 504,
+        "detail": "El turno superó el deadline de 0.001s.",
+        "request_id": "req_1a9ae7163aeb47129de87528a3a84684",
+        "trace_id": "39e7fad29cbc1f50438e779b29893c1b"
+      },
+      "validation_body": {
+        "type": "/errors/validation-error",
+        "title": "La solicitud no es válida",
+        "status": 422,
+        "detail": "body.message: String should have at least 1 character",
+        "request_id": "req_319afcd2b455477c9b999f3a123ed305",
+        "trace_id": null,
+        "errors": [
+          {
+            "loc": "body.message",
+            "msg": "String should have at least 1 character"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "6",
+    "name": "Streaming SSE (extra)",
+    "input": "¿Qué es Reciprocal Rank Fusion?",
+    "expected": "eventos step → token → citation → done",
+    "obtained": "eventos=43 (step=4, token=36, citation=2), último=done",
+    "passed": true,
+    "status_code": 200,
+    "trace_id": "3a94d1cd8d7bbc705dcd2c5ade07120c",
+    "trace_url": "http://localhost:6006/redirects/traces/3a94d1cd8d7bbc705dcd2c5ade07120c",
+    "request_id": "req_2026d2a5ac304dc9ad3e25c72f01e556",
+    "thread_id": "esc6-530ee0",
+    "latency_ms": 6691.8,
+    "details": {}
+  }
+]
